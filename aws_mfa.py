@@ -21,14 +21,17 @@ def main():
     """Main function that reads the MFA serial number from an environment variable, gets an AWS session token using the provided MFA serial number and MFA token (if available), and sets environment variables for the AWS CLI to use."""
     mfa_serial = os.getenv("AWS_MFA_SERIAL")
 
-    if mfa_serial is not None:
-        # Use the MFA serial number from the environment variable
-        credentials = get_aws_session_token(mfa_serial)
-    else:
-        # Prompt the user for their MFA token and serial number
-        mfa_serial = input("Enter your MFA serial number: ")
-        mfa_token = get_mfa_token()
-        credentials = get_aws_session_token(mfa_serial)
+    try:
+        if mfa_serial is not None:
+            # Use the MFA serial number from the environment variable
+            credentials = get_aws_session_token(mfa_serial)
+        else:
+            # Prompt the user for their MFA token and serial number
+            mfa_serial = input("Enter your MFA serial number: ")
+            mfa_token = get_mfa_token()
+            credentials = get_aws_session_token(mfa_serial)
+    except e:
+        print(" Error you might need to unset some of the env variables : unset AWS_SESSION_TOKEN AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY")
 
     # Set environment variables for the AWS CLI to use
     os.environ["AWS_ACCESS_KEY_ID"] = credentials["AccessKeyId"]
